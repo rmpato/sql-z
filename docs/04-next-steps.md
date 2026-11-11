@@ -1,6 +1,6 @@
 # 4. Next steps
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/04-proximos-pasos.md)
 
 You've used SQL by hand, from code, and behind an API. Now make it stick by changing the code yourself, then go beyond what this workshop covers.
 

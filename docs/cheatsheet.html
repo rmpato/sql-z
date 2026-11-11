@@ -197,6 +197,15 @@ td code { white-space: nowrap; }
 .pipe span { background: var(--sunken); border-radius: 99px; padding: 3px 10px; font-family: var(--font-mono); }
 .pipe em { font-style: normal; color: var(--muted); }
 
+/* Error list: message on top, fix below, so long messages wrap instead of squeezing a column */
+.errs { display: grid; }
+.err { display: grid; gap: 3px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.err:first-child { padding-top: 0; }
+.err:last-child { border-bottom: 0; padding-bottom: 0; }
+.err code { justify-self: start; color: var(--warn); overflow-wrap: anywhere; font-size: 12px; }
+.err span { color: var(--muted); font-size: 13px; }
+.err span strong { color: var(--ink); }
+
 footer { margin-top: 8px; color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
 @media (max-width: 520px) {
@@ -477,21 +486,20 @@ docker compose down -v &amp;&amp; docker compose up -d --wait</pre>
     <!-- MISTAKES -->
     <section class="card">
       <h2>Common errors</h2>
-      <div class="tbl"><table>
-        <tbody>
-          <tr><td><code>column "goku" does not exist</code></td><td>Text needs <strong>single</strong> quotes: <code>'Goku'</code></td></tr>
-          <tr><td><code>must appear in the GROUP BY clause</code></td><td>Add the column to GROUP BY, or wrap it in an aggregate</td></tr>
-          <tr><td><code>column reference "name" is ambiguous</code></td><td>Both tables have it. Prefix it: <code>c.name</code></td></tr>
-          <tr><td><code>violates foreign key constraint</code></td><td>The id you point at doesn't exist, or something still points at this row</td></tr>
-          <tr><td><code>aggregate functions are not allowed in WHERE</code></td><td>Use HAVING for conditions on <code>COUNT()</code>, <code>AVG()</code>, …</td></tr>
-        </tbody>
-      </table></div>
+      <div class="errs">
+        <div class="err"><code>column "goku" does not exist</code><span>Text needs <strong>single</strong> quotes: 'Goku'</span></div>
+        <div class="err"><code>must appear in the GROUP BY clause</code><span>Add the column to GROUP BY, or wrap it in an aggregate</span></div>
+        <div class="err"><code>column reference "name" is ambiguous</code><span>Both tables have it. Prefix it: c.name</span></div>
+        <div class="err"><code>violates foreign key constraint</code><span>The id you point at doesn't exist, or something still points at this row</span></div>
+        <div class="err"><code>aggregate functions are not allowed in WHERE</code><span>Use HAVING for conditions on COUNT(), AVG(), …</span></div>
+      </div>
     </section>
 
   </div>
 
   <footer>
     <span>github.com/rmpato/sql-z</span>
+    <span><a href="es/cheatsheet.html">Leer en español</a></span>
     <span>Lesson references (e.g. 5.4) point to <code>sql/03_examples.sql</code></span>
   </footer>
 </div>

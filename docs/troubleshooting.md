@@ -1,6 +1,6 @@
 # Troubleshooting
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/problemas.md)
 
 Find the error you see, then apply the fix.
 

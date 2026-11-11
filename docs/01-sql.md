@@ -1,6 +1,6 @@
 # 1. SQL by hand
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/01-sql.md)
 
 **Goal:** talk to the database directly and learn the essential SQL a junior developer is expected to know.
 
@@ -51,7 +51,7 @@ Open [`sql/03_examples.sql`](../sql/03_examples.sql) in an editor next to psql. 
 
 The file ends with **practice exercises**, with answers at the bottom. Try them before peeking.
 
-> **Keep the cheatsheet open.** [`docs/cheatsheet.html`](cheatsheet.html) has every topic above on one page, with copyable examples. Open it in your browser: `xdg-open docs/cheatsheet.html` (Linux), `open docs/cheatsheet.html` (macOS) or `start docs/cheatsheet.html` (Windows).
+> **Keep the cheatsheet open.** [`docs/cheatsheet.html`](cheatsheet.html) has every topic above on one page, with copyable examples. Open it in your browser: `xdg-open docs/cheatsheet.html` (Linux), `open docs/cheatsheet.html` (macOS) or `start docs/cheatsheet.html` (Windows). It's also online: [rmpato.github.io/sql-z/docs/cheatsheet.html](https://rmpato.github.io/sql-z/docs/cheatsheet.html).
 
 ## Good to know
 

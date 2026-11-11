@@ -1,5 +1,7 @@
 # sql-z
 
+**English** · [Español](README.es.md)
+
 **Learn essential SQL with Dragon Ball data, then see how real code uses it.**
 No prior database experience needed.
 
@@ -17,7 +19,9 @@ Stuck? See [Troubleshooting](docs/troubleshooting.md).
 
 ## Cheatsheet
 
-Keep [`docs/cheatsheet.html`](docs/cheatsheet.html) open while you work. It puts every lesson topic on one page, with copyable examples. Open it in your browser (GitHub only shows its source code):
+Keep the **[SQL cheatsheet](https://rmpato.github.io/sql-z/docs/cheatsheet.html)** open while you work. It puts every lesson topic on one page, with copyable examples.
+
+It's also in the repo at `docs/cheatsheet.html`, so it works offline. Open it in your browser:
 
 ```bash
 xdg-open docs/cheatsheet.html   # Ubuntu / Linux
@@ -56,7 +60,7 @@ races   ──┘
 
 Defined in [`sql/01_schema.sql`](sql/01_schema.sql), filled by [`sql/02_seed.sql`](sql/02_seed.sql).
 
-## Cheat sheet
+## Commands
 
 | Task | Command |
 |------|---------|
@@ -78,8 +82,10 @@ sql/
   01_schema.sql     table definitions
   02_seed.sql       starting data
   03_examples.sql   the SQL lesson (step 1)
+  03_ejemplos.sql   the same lesson in Spanish
 go-demo/            step 2: a Go program running SQL
 go-api/             step 3: a REST API backed by SQL
 docs/               the guides linked above, plus cheatsheet.html
+docs/es/            the guides and cheatsheet in Spanish
 connect.sh          start the database and open psql
 ```

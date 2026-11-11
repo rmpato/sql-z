@@ -1,6 +1,6 @@
 # 3. SQL behind an API
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/03-go-api.md)
 
 **Goal:** follow a value from an HTTP request, into a SQL query, into the table. This is what most backend code does all day.
 

@@ -1,6 +1,6 @@
 # 0. Setup
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/00-preparacion.md)
 
 You need four tools:
 

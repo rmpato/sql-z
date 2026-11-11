@@ -1,6 +1,6 @@
 # 2. SQL from code
 
-[← Back to README](../README.md)
+[← Back to README](../README.md) · [Español](es/02-go-demo.md)
 
 **Goal:** see the SQL you typed in step 1 running inside a program, and what changes when it does.
 

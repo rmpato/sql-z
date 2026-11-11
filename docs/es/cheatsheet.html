@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>sql-z Machete</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a printed-reference sheet — header strip, then a balanced multi-column flow of topic cards, each a self-contained lookup. */
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --sunken: #eef1f8;
+  --ink: #141a2e;
+  --muted: #5a6382;
+  --line: #dde2ee;
+  --accent: #e2570c;        /* gi orange */
+  --accent-soft: #fdeadf;
+  --blue: #1d4ed8;          /* keywords */
+  --str: #2f7d3b;
+  --warn: #b42318;
+  --warn-soft: #fde8e6;
+  --ok: #1f7a4a;
+  --ok-soft: #e3f4ea;
+  --font-display: "Bricolage Grotesque", "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1120; --surface: #151a2c; --sunken: #1b2136; --ink: #e7eaf5; --muted: #99a1bf;
+    --line: #262d46; --accent: #ff8b42; --accent-soft: #3a2316; --blue: #8fb0ff; --str: #7fd18b;
+    --warn: #ff8a80; --warn-soft: #3b1d1d; --ok: #7fd1a3; --ok-soft: #173126;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1120; --surface: #151a2c; --sunken: #1b2136; --ink: #e7eaf5; --muted: #99a1bf;
+  --line: #262d46; --accent: #ff8b42; --accent-soft: #3a2316; --blue: #8fb0ff; --str: #7fd18b;
+  --warn: #ff8a80; --warn-soft: #3b1d1d; --ok: #7fd1a3; --ok-soft: #173126;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Header */
+header.top {
+  display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between;
+  gap: 12px 24px; padding-bottom: 18px; margin-bottom: 22px;
+  border-bottom: 2px solid var(--ink);
+}
+.brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+h1 {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 44px);
+  letter-spacing: -0.02em; line-height: 1; margin: 0;
+}
+h1 span { color: var(--accent); }
+.tag { color: var(--muted); font-size: 15px; }
+.conn {
+  font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+}
+.conn b { color: var(--ink); font-weight: 600; }
+
+/* Card flow */
+.flow { columns: 3 360px; column-gap: 18px; }
+.card {
+  break-inside: avoid; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 16px 18px 18px; margin-bottom: 18px;
+  display: flex; flex-direction: column; gap: 10px; min-width: 0;
+}
+.card h2 {
+  font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -0.01em;
+  margin: 0; display: flex; align-items: baseline; gap: 10px; text-wrap: balance;
+}
+.card h2 .ref {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px; font-weight: 400;
+  color: var(--muted); letter-spacing: 0; white-space: nowrap;
+}
+.card.wide { column-span: all; }
+.card p { margin: 0; color: var(--muted); }
+.card p strong { color: var(--ink); font-weight: 600; }
+.label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+}
+
+/* Code */
+pre, code { font-family: var(--font-mono); }
+code { font-size: 0.92em; background: var(--sunken); padding: 1px 5px; border-radius: 4px; }
+pre {
+  margin: 0; background: var(--sunken); border-radius: 7px; padding: 10px 12px;
+  font-size: 12.5px; line-height: 1.55; overflow-x: auto; position: relative; cursor: copy;
+  border: 1px solid transparent; transition: border-color .15s;
+}
+pre:hover { border-color: var(--line); }
+pre:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+pre.copied::after {
+  content: "copiado"; position: absolute; top: 6px; right: 8px; font-family: var(--font-body);
+  font-size: 11px; color: var(--ok); background: var(--ok-soft); padding: 1px 7px; border-radius: 99px;
+}
+.kw { color: var(--blue); font-weight: 600; }
+.st { color: var(--str); }
+.nu { color: var(--accent); }
+.cm { color: var(--muted); font-style: italic; }
+
+/* Tables */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+/* Schema */
+.schema { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.tbox { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.tbox h3 {
+  margin: 0; font-family: var(--font-mono); font-size: 13px; font-weight: 600; padding: 6px 10px;
+  background: var(--ink); color: var(--bg);
+}
+.tbox ul { list-style: none; margin: 0; padding: 6px 10px 8px; font-family: var(--font-mono); font-size: 12px; }
+.tbox li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.tbox li .t { color: var(--muted); }
+.pk { color: var(--accent); font-weight: 600; }
+.fk { color: var(--blue); }
+.tbox .ex { border-top: 1px dashed var(--line); padding: 6px 10px; font-size: 12px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); }
+
+/* Clause order */
+.order { display: grid; gap: 4px; }
+.order .row {
+  display: grid; grid-template-columns: 112px 1fr 34px; align-items: center; gap: 10px;
+  padding: 5px 8px; border-radius: 6px; background: var(--sunken);
+}
+.order .row .k { font-family: var(--font-mono); font-weight: 600; color: var(--blue); font-size: 12.5px; }
+.order .row .d { color: var(--muted); font-size: 12.5px; }
+.order .row .n {
+  justify-self: end; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 600; background: var(--accent-soft); color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.order .row.opt .k::after { content: " ?"; color: var(--muted); font-weight: 400; }
+
+/* JOIN demo */
+.joins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.jbox { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.jbox .label { margin-bottom: 4px; display: block; }
+.jbox table { font-family: var(--font-mono); font-size: 12px; }
+.jbox td { padding: 3px 4px; }
+.null { color: var(--muted); font-style: italic; }
+.gone td { text-decoration: line-through; color: var(--muted); opacity: .7; }
+.kept td { background: var(--ok-soft); }
+.venn { display: flex; gap: 0; margin-bottom: 6px; }
+.venn i {
+  width: 34px; height: 22px; border-radius: 50%; border: 2px solid var(--blue); display: block;
+}
+.venn i + i { margin-left: -12px; }
+.venn.inner i { background: transparent; }
+.venn.inner { background: none; }
+.venn.left i:first-child { background: var(--accent-soft); border-color: var(--accent); }
+
+/* Callouts */
+.warn, .tip {
+  border-radius: 7px; padding: 8px 10px; font-size: 13px; display: flex; gap: 8px; align-items: flex-start;
+}
+.warn { background: var(--warn-soft); color: var(--ink); }
+.warn b { color: var(--warn); }
+.tip { background: var(--ok-soft); }
+.tip b { color: var(--ok); }
+
+/* Do / don't */
+.dd { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dd > div { min-width: 0; }
+.dd .label.bad { color: var(--warn); }
+.dd .label.good { color: var(--ok); }
+
+/* Flow strip (HTTP → SQL) */
+.pipe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; }
+.pipe span { background: var(--sunken); border-radius: 99px; padding: 3px 10px; font-family: var(--font-mono); }
+.pipe em { font-style: normal; color: var(--muted); }
+
+/* Error list: message on top, fix below, so long messages wrap instead of squeezing a column */
+.errs { display: grid; }
+.err { display: grid; gap: 3px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.err:first-child { padding-top: 0; }
+.err:last-child { border-bottom: 0; padding-bottom: 0; }
+.err code { justify-self: start; color: var(--warn); overflow-wrap: anywhere; font-size: 12px; }
+.err span { color: var(--muted); font-size: 13px; }
+.err span strong { color: var(--ink); }
+
+footer { margin-top: 8px; color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+
+@media (max-width: 520px) {
+  .joins, .dd { grid-template-columns: 1fr; }
+  .order .row { grid-template-columns: 92px 1fr 28px; }
+}
+@media (prefers-reduced-motion: reduce) { pre { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>sql<span>-z</span> machete</h1>
+      <span class="tag">SQL esencial con la base de datos de Dragon Ball. Hacé clic en cualquier bloque de código para copiarlo.</span>
+    </div>
+    <div class="conn">
+      <span>host <b>localhost</b></span><span>puerto <b>5432</b></span><span>db <b>dragonball</b></span><span>usuario <b>goku</b></span><span>contraseña <b>kamehameha</b></span>
+    </div>
+  </header>
+
+  <div class="flow">
+
+    <!-- SCHEMA -->
+    <section class="card wide">
+      <h2>La base de datos <span class="ref">sql/01_schema.sql</span></h2>
+      <div class="schema">
+        <div class="tbox">
+          <h3>planets</h3>
+          <ul>
+            <li><span class="pk">id</span><span class="t">serial, PK</span></li>
+            <li><span>name</span><span class="t">texto, único</span></li>
+            <li><span>gravity</span><span class="t">decimal</span></li>
+          </ul>
+          <div class="ex">1 Earth · 2 Namek · 3 Vegeta · 4 Other World</div>
+        </div>
+        <div class="tbox">
+          <h3>races</h3>
+          <ul>
+            <li><span class="pk">id</span><span class="t">serial, PK</span></li>
+            <li><span>name</span><span class="t">texto, único</span></li>
+          </ul>
+          <div class="ex">1 Saiyan · 2 Human · 3 Namekian · 4 Android</div>
+        </div>
+        <div class="tbox">
+          <h3>characters</h3>
+          <ul>
+            <li><span class="pk">id</span><span class="t">serial, PK</span></li>
+            <li><span>name</span><span class="t">texto</span></li>
+            <li><span>power_level</span><span class="t">entero</span></li>
+            <li><span class="fk">planet_id</span><span class="t">→ planets.id</span></li>
+            <li><span class="fk">race_id</span><span class="t">→ races.id</span></li>
+          </ul>
+          <div class="ex">Goku 9001 · Vegeta 8500 · … · Frieza (raza NULL)</div>
+        </div>
+        <div class="tbox">
+          <h3>techniques</h3>
+          <ul>
+            <li><span class="pk">id</span><span class="t">serial, PK</span></li>
+            <li><span>name</span><span class="t">texto</span></li>
+            <li><span class="fk">character_id</span><span class="t">→ characters.id</span></li>
+          </ul>
+          <div class="ex">Kamehameha → Goku · Final Flash → Vegeta</div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><b class="pk">naranja</b> clave primaria: id único de cada fila</span>
+        <span><b class="fk">azul</b> clave foránea: apunta al id de otra tabla</span>
+        <span><b>NULL</b> significa "sin valor". No es 0 ni texto vacío.</span>
+      </div>
+    </section>
+
+    <!-- ANATOMY -->
+    <section class="card">
+      <h2>Anatomía de un SELECT <span class="ref">Partes 1–4</span></h2>
+      <p>Escribí las cláusulas <strong>en este orden</strong>. El círculo muestra el orden en que la base de datos realmente las <strong>ejecuta</strong>.</p>
+      <div class="order">
+        <div class="row"><span class="k">SELECT</span><span class="d">qué columnas mostrar</span><span class="n">5</span></div>
+        <div class="row"><span class="k">FROM</span><span class="d">qué tabla (+ JOINs)</span><span class="n">1</span></div>
+        <div class="row opt"><span class="k">WHERE</span><span class="d">quedarse con las filas que cumplen</span><span class="n">2</span></div>
+        <div class="row opt"><span class="k">GROUP BY</span><span class="d">juntar filas en grupos</span><span class="n">3</span></div>
+        <div class="row opt"><span class="k">HAVING</span><span class="d">quedarse con los grupos que cumplen</span><span class="n">4</span></div>
+        <div class="row opt"><span class="k">ORDER BY</span><span class="d">ordenar el resultado</span><span class="n">6</span></div>
+        <div class="row opt"><span class="k">LIMIT</span><span class="d">quedarse con las primeras N</span><span class="n">7</span></div>
+      </div>
+      <p><strong>Por qué importa:</strong> WHERE se ejecuta antes que SELECT, así que no puede usar un alias que hiciste con <code>AS</code>. ORDER BY se ejecuta después, así que sí puede.</p>
+<pre class="sql">SELECT name, power_level AS power
+FROM characters
+WHERE planet_id = 1
+ORDER BY power DESC
+LIMIT 3;</pre>
+    </section>
+
+    <!-- FILTERING -->
+    <section class="card">
+      <h2>Filtrar con WHERE <span class="ref">Parte 2</span></h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Para</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td>igual / distinto</td><td><code>race_id = 1</code> · <code>race_id &lt;&gt; 1</code></td></tr>
+          <tr><td>comparar</td><td><code>power_level &gt;= 3000</code></td></tr>
+          <tr><td>texto (comillas simples)</td><td><code>name = 'Goku'</code></td></tr>
+          <tr><td>las dos / alguna</td><td><code>a AND b</code> · <code>a OR b</code></td></tr>
+          <tr><td>en una lista</td><td><code>race_id IN (2, 4)</code></td></tr>
+          <tr><td>rango (incluye extremos)</td><td><code>BETWEEN 1000 AND 5000</code></td></tr>
+          <tr><td>empieza con G</td><td><code>name LIKE 'G%'</code></td></tr>
+          <tr><td>contiene, sin importar mayúsculas</td><td><code>name ILIKE '%an%'</code></td></tr>
+          <tr><td>sin valor</td><td><code>race_id IS NULL</code></td></tr>
+        </tbody>
+      </table></div>
+      <p><code>%</code> = cualquier cantidad de caracteres &nbsp;·&nbsp; <code>_</code> = exactamente uno</p>
+    </section>
+
+    <!-- NULL -->
+    <section class="card">
+      <h2>La trampa del NULL <span class="ref">2.7</span></h2>
+      <div class="dd">
+        <div>
+          <span class="label bad">No devuelve nada</span>
+<pre class="sql">WHERE race_id = NULL</pre>
+        </div>
+        <div>
+          <span class="label good">Encuentra a Frieza</span>
+<pre class="sql">WHERE race_id IS NULL</pre>
+        </div>
+      </div>
+      <p>NULL significa desconocido, así que <code>NULL = NULL</code> no es verdadero. Usá siempre <code>IS NULL</code> / <code>IS NOT NULL</code>. Funciones como <code>AVG</code> ignoran los NULL.</p>
+    </section>
+
+    <!-- AGGREGATES -->
+    <section class="card">
+      <h2>Resumir <span class="ref">Parte 4</span></h2>
+      <div class="tbl"><table>
+        <tbody>
+          <tr><td><code>COUNT(*)</code></td><td>cantidad de filas</td></tr>
+          <tr><td><code>SUM(col)</code></td><td>suma total</td></tr>
+          <tr><td><code>AVG(col)</code></td><td>promedio (envolvelo en <code>ROUND()</code>)</td></tr>
+          <tr><td><code>MIN(col)</code> / <code>MAX(col)</code></td><td>el menor / el mayor</td></tr>
+        </tbody>
+      </table></div>
+<pre class="sql">SELECT planet_id, COUNT(*) AS fighters
+FROM characters
+WHERE power_level &gt; 1000   -- filtra FILAS
+GROUP BY planet_id
+HAVING COUNT(*) &gt;= 2;      -- filtra GRUPOS</pre>
+      <div class="tip"><b>Regla</b><span>Cada columna del SELECT tiene que estar en el GROUP BY o dentro de una función como COUNT().</span></div>
+    </section>
+
+    <!-- JOINS -->
+    <section class="card">
+      <h2>JOIN vs LEFT JOIN <span class="ref">Parte 5</span></h2>
+<pre class="sql">SELECT c.name, r.name AS race
+FROM characters c
+LEFT JOIN races r ON c.race_id = r.id;</pre>
+      <p><code>ON</code> dice cómo coinciden las filas. <code>c</code> y <code>r</code> son nombres cortos (alias) de las tablas.</p>
+      <div class="joins">
+        <div class="jbox">
+          <div class="venn inner"><i></i><i></i></div>
+          <span class="label">JOIN: solo las que coinciden</span>
+          <table>
+            <tr><td>Goku</td><td>Saiyan</td></tr>
+            <tr><td>Piccolo</td><td>Namekian</td></tr>
+            <tr class="gone"><td>Frieza</td><td>—</td></tr>
+          </table>
+        </div>
+        <div class="jbox">
+          <div class="venn left"><i></i><i></i></div>
+          <span class="label">LEFT JOIN: todas las de la izquierda</span>
+          <table>
+            <tr><td>Goku</td><td>Saiyan</td></tr>
+            <tr><td>Piccolo</td><td>Namekian</td></tr>
+            <tr class="kept"><td>Frieza</td><td class="null">NULL</td></tr>
+          </table>
+        </div>
+      </div>
+      <p><strong>Encontrar filas sin pareja</strong>: LEFT JOIN y después <code>WHERE derecha.id IS NULL</code>. Así encuentra 5.4 el planeta vacío.</p>
+    </section>
+
+    <!-- SUBQUERY -->
+    <section class="card">
+      <h2>Subconsulta <span class="ref">Parte 6</span></h2>
+      <p>Una consulta adentro de otra. La de adentro se ejecuta primero.</p>
+<pre class="sql">SELECT name, power_level
+FROM characters
+WHERE power_level &gt;
+  (SELECT AVG(power_level) FROM characters);</pre>
+    </section>
+
+    <!-- WRITE -->
+    <section class="card">
+      <h2>Cambiar datos <span class="ref">Parte 7</span></h2>
+<pre class="sql">INSERT INTO characters (name, power_level, planet_id, race_id)
+VALUES ('Yamcha', 400, 1, 2)
+RETURNING id;
+
+UPDATE characters
+SET power_level = 1200
+WHERE name = 'Yamcha';
+
+DELETE FROM characters
+WHERE name = 'Yamcha';</pre>
+      <div class="warn"><b>⚠</b><span><b>Sin WHERE = todas las filas.</b> <code>DELETE FROM characters;</code> vacía la tabla. Probá el WHERE antes con un SELECT para ver qué vas a tocar.</span></div>
+      <p><strong>Las claves foráneas dicen que no:</strong> no podés borrar a Goku mientras haya técnicas que apuntan a él, ni insertar un personaje en el planeta 99.</p>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section class="card">
+      <h2>Transacciones <span class="ref">Parte 8</span></h2>
+      <p>Todo o nada. No se guarda nada hasta el <code>COMMIT</code>. <code>ROLLBACK</code> deshace todo desde el <code>BEGIN</code>.</p>
+<pre class="sql">BEGIN;
+DELETE FROM techniques WHERE character_id = 1;
+DELETE FROM characters WHERE id = 1;
+ROLLBACK;   -- o COMMIT; para que quede</pre>
+      <div class="tip"><b>Tip</b><span>¿Vas a ejecutar algo riesgoso a mano? Probalo primero adentro de BEGIN … ROLLBACK.</span></div>
+    </section>
+
+    <!-- PSQL -->
+    <section class="card">
+      <h2>psql y Docker</h2>
+      <div class="tbl"><table>
+        <tbody>
+          <tr><td><code>./connect.sh</code></td><td>levanta la base + abre psql</td></tr>
+          <tr><td><code>\dt</code></td><td>lista las tablas</td></tr>
+          <tr><td><code>\d characters</code></td><td>muestra las columnas</td></tr>
+          <tr><td><code>\x</code></td><td>salida vertical para filas anchas</td></tr>
+          <tr><td><code>\q</code></td><td>salir</td></tr>
+          <tr><td><code>q</code></td><td>salir de un resultado largo (paginador)</td></tr>
+        </tbody>
+      </table></div>
+<pre class="sh"><span class="cm"># volver a los datos iniciales</span>
+docker compose down -v &amp;&amp; docker compose up -d --wait</pre>
+      <p>¿Te olvidaste el <code>;</code>? El prompt cambia a <code>dragonball-#</code>. Escribí <code>;</code> y Enter.</p>
+    </section>
+
+    <!-- GO -->
+    <section class="card">
+      <h2>SQL desde Go <span class="ref">go-demo</span></h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Llamada</th><th>Para</th></tr></thead>
+        <tbody>
+          <tr><td><code>db.Query</code></td><td>muchas filas → recorrer con <code>rows.Next()</code> + <code>Scan</code></td></tr>
+          <tr><td><code>db.QueryRow</code></td><td>exactamente una fila (o <code>RETURNING</code>)</td></tr>
+          <tr><td><code>db.Exec</code></td><td>no devuelve filas: UPDATE, DELETE</td></tr>
+          <tr><td><code>db.Begin</code></td><td>arrancar una transacción → <code>tx.Commit()</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="dd">
+        <div>
+          <span class="label bad">Inyección SQL</span>
+<pre class="go">"WHERE name = '" + name + "'"</pre>
+        </div>
+        <div>
+          <span class="label good">Placeholder ($1)</span>
+<pre class="go">"WHERE name = $1", name</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- API -->
+    <section class="card">
+      <h2>HTTP → SQL <span class="ref">go-api</span></h2>
+      <div class="pipe"><span>pedido</span><em>→</em><span>variable de Go</span><em>→</em><span>$1</span><em>→</em><span>tabla</span></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Pedido</th><th>Datos desde</th><th>SQL</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET ?min_power=</code></td><td>query string</td><td>SELECT … WHERE</td></tr>
+          <tr><td><code>GET /{id}</code></td><td>ruta</td><td>SELECT … WHERE id</td></tr>
+          <tr><td><code>POST</code></td><td>cuerpo JSON</td><td>INSERT</td></tr>
+          <tr><td><code>PUT /{id}</code></td><td>ruta + cuerpo</td><td>UPDATE</td></tr>
+          <tr><td><code>DELETE /{id}</code></td><td>ruta</td><td>DELETE (tx)</td></tr>
+        </tbody>
+      </table></div>
+<pre class="sh">curl -X POST localhost:8080/characters \
+  -d '{"name":"Bulma","power_level":12,"planet_id":1,"race_id":2}'</pre>
+    </section>
+
+    <!-- MISTAKES -->
+    <section class="card">
+      <h2>Errores comunes</h2>
+      <div class="errs">
+        <div class="err"><code>column "goku" does not exist</code><span>El texto va entre comillas <strong>simples</strong>: 'Goku'</span></div>
+        <div class="err"><code>must appear in the GROUP BY clause</code><span>Agregá la columna al GROUP BY, o envolvela en una función como COUNT()</span></div>
+        <div class="err"><code>column reference "name" is ambiguous</code><span>Las dos tablas la tienen. Aclará cuál: c.name</span></div>
+        <div class="err"><code>violates foreign key constraint</code><span>El id al que apuntás no existe, o todavía hay filas que apuntan a esta</span></div>
+        <div class="err"><code>aggregate functions are not allowed in WHERE</code><span>Usá HAVING para condiciones sobre COUNT(), AVG(), …</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <span>github.com/rmpato/sql-z</span>
+    <span><a href="../cheatsheet.html">Read in English</a></span>
+    <span>Las referencias (por ej. 5.4) apuntan a <code>sql/03_ejemplos.sql</code></span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var KW = ["SELECT","FROM","WHERE","AND","OR","NOT","IN","BETWEEN","LIKE","ILIKE","IS","NULL","AS","ORDER","BY","GROUP","HAVING","LIMIT","DESC","ASC","JOIN","LEFT","ON","INSERT","INTO","VALUES","RETURNING","UPDATE","SET","DELETE","BEGIN","COMMIT","ROLLBACK","COUNT","SUM","AVG","MIN","MAX","ROUND","DISTINCT"];
+  var kwRe = new RegExp("\\b(" + KW.join("|") + ")\\b", "g");
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function hl(src) {
+    // split into comments, strings, and the rest, so keywords inside them aren't colored
+    var out = "", re = /(--[^\n]*)|('(?:[^']|'')*')/g, last = 0, m;
+    function plain(t) {
+      return esc(t).replace(kwRe, '<span class="kw">$1</span>').replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="nu">$1</span>');
+    }
+    while ((m = re.exec(src))) {
+      out += plain(src.slice(last, m.index));
+      out += m[1] ? '<span class="cm">' + esc(m[1]) + "</span>" : '<span class="st">' + esc(m[2]) + "</span>";
+      last = re.lastIndex;
+    }
+    return out + plain(src.slice(last));
+  }
+  document.querySelectorAll("pre.sql").forEach(function (p) { p.innerHTML = hl(p.textContent); });
+  document.querySelectorAll("pre.go").forEach(function (p) {
+    p.innerHTML = esc(p.textContent).replace(/("[^"]*")/g, '<span class="st">$1</span>').replace(/(\$\d)/g, '<span class="nu">$1</span>');
+  });
+
+  document.querySelectorAll("pre").forEach(function (p) {
+    p.tabIndex = 0;
+    p.setAttribute("role", "button");
+    p.setAttribute("aria-label", "Copiar código");
+    function flash() { p.classList.add("copied"); setTimeout(function () { p.classList.remove("copied"); }, 1100); }
+    function selectIt() { var r = document.createRange(); r.selectNodeContents(p); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    function copy() {
+      var text = p.textContent;
+      try {
+        navigator.clipboard.writeText(text).then(flash, selectIt);
+      } catch (e) { selectIt(); }
+    }
+    p.addEventListener("click", copy);
+    p.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copy(); } });
+  });
+})();
+</script>
+</body>
+</html>
