@@ -17,7 +17,7 @@ Stuck? See [Troubleshooting](docs/troubleshooting.md).
 
 ## Cheatsheet
 
-Keep [`docs/cheatsheet.html`](docs/cheatsheet.html) open while you work. It covers every lesson topic as copyable recipes, with the results you should get. Open it in your browser (GitHub only shows its source code):
+Keep [`docs/cheatsheet.html`](docs/cheatsheet.html) open while you work. It puts every lesson topic on one page, with copyable examples. Open it in your browser (GitHub only shows its source code):
 
 ```bash
 xdg-open docs/cheatsheet.html   # Ubuntu / Linux
