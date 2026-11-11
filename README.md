@@ -10,11 +10,41 @@ The workshop has three steps, and each one builds on the last:
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) with Docker Compose (Docker Desktop includes both)
+- [Docker](https://docs.docker.com/get-docker/) with Docker Compose v2 (Docker Desktop includes both; on Linux see [below](#on-ubuntu--linux))
 - [Go](https://go.dev/dl/) 1.22 or newer (only needed for steps 2 and 3)
 - [Git](https://git-scm.com/downloads) to clone the repo
+- `curl` for step 3 (already installed on macOS)
 
-**Before anything else, open Docker Desktop** and wait until it says it's running. Every `docker` command fails if it isn't, usually with an error like `Cannot connect to the Docker daemon`.
+Check that everything is there:
+
+```bash
+docker compose version   # needs v2 or newer
+go version               # needs go1.22 or newer
+```
+
+**Before anything else, make sure Docker is running.** On Mac or Windows, open Docker Desktop and wait until it says it's running. On Linux, Docker runs in the background (see below). Every `docker` command fails if it isn't running, usually with an error like `Cannot connect to the Docker daemon`.
+
+### On Ubuntu / Linux
+
+Install everything with:
+
+```bash
+sudo apt update
+sudo apt install -y git curl docker.io docker-compose-v2
+sudo snap install go --classic
+
+# let your user run docker without sudo
+sudo usermod -aG docker $USER
+```
+
+Then **log out and log back in** (or restart) so the `docker` group takes effect. Check that it worked by running `docker run --rm hello-world` with no `sudo`.
+
+Things to know:
+
+- **Install Go with snap (or from [go.dev](https://go.dev/dl/)), not `apt install golang-go`.** On Ubuntu 22.04, apt installs Go 1.18, which is too old. The API uses routes like `GET /characters/{id}` that need 1.22 or newer, and it fails with confusing errors on older versions.
+- **Use `docker compose` (with a space), not `docker-compose`.** The hyphenated command is the old v1, which doesn't support `--wait`.
+- **Docker should start on its own.** If it doesn't, start it with `sudo systemctl enable --now docker`.
+- You can also follow [Docker's official Ubuntu guide](https://docs.docker.com/engine/install/ubuntu/), which installs the latest Docker Engine and Compose from Docker's own repository.
 
 ### On Windows
 
@@ -39,7 +69,7 @@ docker compose up -d --wait
 
 ### Prefer a GUI? Try Beekeeper Studio
 
-[Beekeeper Studio](https://www.beekeeperstudio.io/) is a free, friendly desktop app for browsing tables and running queries. It's a nice alternative to `psql` if you'd rather click around, see results in a grid, and keep a few queries in tabs. Create a new **PostgreSQL** connection with these details (they work in any other client too, such as DBeaver or TablePlus):
+[Beekeeper Studio](https://www.beekeeperstudio.io/) is a free, friendly desktop app for browsing tables and running queries. It's a nice alternative to `psql` if you'd rather click around, see results in a grid, and keep a few queries in tabs. It runs on Mac, Windows and Linux (on Ubuntu: `sudo snap install beekeeper-studio`). Create a new **PostgreSQL** connection with these details (they work in any other client too, such as DBeaver or TablePlus):
 
 | Setting  | Value       |
 |----------|-------------|
@@ -228,9 +258,20 @@ docker compose down -v && docker compose up -d --wait
 
 ## Troubleshooting
 
-- **`Cannot connect to the Docker daemon` / `docker: command not found`.** Docker Desktop isn't running, or isn't installed. Open it and wait until it says it's running.
-- **Windows: `./connect.sh` doesn't run, or `curl` complains about JSON.** Use Git Bash. See [On Windows](#on-windows).
-- **Windows Git Bash: `the input device is not a TTY`.** Put `winpty` in front of the command, for example `winpty docker exec -it dbz-sql psql -U goku -d dragonball`.
-- **`port is already allocated` / `address already in use` on 5432.** Another Postgres is running. Stop it, or change the port mapping in `docker-compose.yml` to `"5433:5432"` (also use 5433 in your GUI client and in `DATABASE_URL`).
+**Docker**
+
+- **`Cannot connect to the Docker daemon` / `docker: command not found`.** Docker isn't running or isn't installed. On Mac or Windows, open Docker Desktop and wait until it says it's running. On Linux, run `sudo systemctl enable --now docker`.
+- **Linux: `permission denied while trying to connect to the Docker daemon socket`.** Your user isn't in the `docker` group yet. Run `sudo usermod -aG docker $USER`, then log out and back in. (Putting `sudo` in front of every docker command also works, but it gets annoying.)
+- **`docker: 'compose' is not a docker command` / `unknown flag: --wait`.** Docker Compose v2 is missing. On Ubuntu, run `sudo apt install docker-compose-v2`. Don't use the old `docker-compose` (with a hyphen).
+- **`port is already allocated` / `address already in use` on 5432.** Another Postgres is already running. On Ubuntu, if you installed Postgres with apt, stop it with `sudo systemctl stop postgresql` (add `sudo systemctl disable postgresql` to keep it from starting on boot). Or change the port mapping in `docker-compose.yml` to `"5433:5432"`, and use 5433 in your GUI client and in `DATABASE_URL`.
 - **`container name "/dbz-sql" is already in use`.** An old copy of this workshop is still running. Remove it with `docker rm -f dbz-sql`.
+
+**Go**
+
+- **Go: errors mentioning `go 1.22`, or `GET /characters/{id}` returns 404.** Your Go is too old. Check with `go version`. On Ubuntu, remove the apt version (`sudo apt remove golang-go`) and run `sudo snap install go --classic`.
 - **Go: `can't reach the database`.** Start the database first (`docker compose up -d --wait`).
+
+**Windows**
+
+- **`./connect.sh` doesn't run, or `curl` complains about JSON.** Use Git Bash. See [On Windows](#on-windows).
+- **Git Bash: `the input device is not a TTY`.** Put `winpty` in front of the command, for example `winpty docker exec -it dbz-sql psql -U goku -d dragonball`.
