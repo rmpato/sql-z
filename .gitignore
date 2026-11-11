@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Go build output (`go build` in each folder)
+go-api/go-api
+go-demo/go-demo
+*.exe
+*.test
+*.out
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Local env overrides (e.g. DATABASE_URL)
+.env

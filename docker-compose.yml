@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dbz-sql
+    environment:
+      POSTGRES_USER: goku
+      POSTGRES_PASSWORD: kamehameha
+      POSTGRES_DB: dragonball
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U goku -d dragonball"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
