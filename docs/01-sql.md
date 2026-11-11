@@ -51,6 +51,8 @@ Open [`sql/03_examples.sql`](../sql/03_examples.sql) in an editor next to psql. 
 
 The file ends with **practice exercises**, with answers at the bottom. Try them before peeking.
 
+> **Keep the cheatsheet open.** [`docs/cheatsheet.html`](cheatsheet.html) has every topic above as short recipes with expected results. Open it in your browser: `xdg-open docs/cheatsheet.html` (Linux), `open docs/cheatsheet.html` (macOS) or `start docs/cheatsheet.html` (Windows).
+
 ## Good to know
 
 - **Some queries fail on purpose** to show common mistakes. The comment above them says so.

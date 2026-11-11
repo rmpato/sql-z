@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>sql-z Cheatsheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a guided companion — sticky jump-to bar, then one roomy section per lesson part; each section is a list of "I want to…" recipes with code and real results side by side. */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --sunken: #eff2f9;
+  --ink: #18203a;
+  --muted: #5d6685;
+  --line: #e0e5f0;
+  --accent: #e0590f;
+  --accent-soft: #fdece2;
+  --blue: #2350d8;
+  --blue-soft: #e6ecfd;
+  --str: #2d7a3a;
+  --warn: #b42318;
+  --warn-soft: #fdeceb;
+  --ok: #1d7347;
+  --ok-soft: #e4f4eb;
+  --font-display: "Bricolage Grotesque", "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1222; --surface: #161b2e; --sunken: #1c2238; --ink: #e8ebf6; --muted: #9ba3c1;
+    --line: #283049; --accent: #ff8d47; --accent-soft: #3a2418; --blue: #92b2ff; --blue-soft: #1e2a4d;
+    --str: #82d38e; --warn: #ff8f86; --warn-soft: #3a1e1f; --ok: #82d3a6; --ok-soft: #173228;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1222; --surface: #161b2e; --sunken: #1c2238; --ink: #e8ebf6; --muted: #9ba3c1;
+  --line: #283049; --accent: #ff8d47; --accent-soft: #3a2418; --blue: #92b2ff; --blue-soft: #1e2a4d;
+  --str: #82d38e; --warn: #ff8f86; --warn-soft: #3a1e1f; --ok: #82d3a6; --ok-soft: #173228;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.inner { max-width: 1040px; margin: 0 auto; }
+
+/* Hero */
+.hero { padding-block: 40px 28px; }
+.hero h1 {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(34px, 6vw, 52px);
+  letter-spacing: -0.025em; line-height: 1.02; margin: 0 0 10px;
+}
+.hero h1 span { color: var(--accent); }
+.hero p { margin: 0; color: var(--muted); font-size: 17px; max-width: 62ch; }
+.how { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 18px; font-size: 14px; color: var(--muted); }
+.how b { color: var(--ink); font-weight: 600; }
+
+/* Sticky jump bar */
+nav.jump {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+nav.jump .inner { overflow-x: auto; scrollbar-width: none; }
+nav.jump .inner::-webkit-scrollbar { display: none; }
+nav.jump ol { list-style: none; margin: 0; padding: 10px 0; display: flex; gap: 6px; width: max-content; }
+nav.jump a {
+  display: block; text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 500;
+  padding: 5px 12px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line);
+  white-space: nowrap;
+}
+nav.jump a:hover { border-color: var(--accent); color: var(--accent); }
+nav.jump a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+nav.jump a .n { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 4px; }
+
+main { padding-block: 12px 56px; }
+
+/* Topic sections */
+.topic { padding-block: 34px 6px; scroll-margin-top: 64px; }
+.topic + .topic { border-top: 1px solid var(--line); }
+.topic-head { display: grid; gap: 6px; margin-bottom: 18px; max-width: 70ch; }
+.part {
+  font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+}
+.topic h2 {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(24px, 3.4vw, 30px);
+  letter-spacing: -0.02em; line-height: 1.15; margin: 0; text-wrap: balance;
+}
+.topic-head p { margin: 0; color: var(--muted); font-size: 16px; }
+
+/* Recipes */
+.recipes { display: grid; gap: 12px; }
+.recipe {
+  display: grid; grid-template-columns: minmax(180px, 1fr) minmax(0, 1.7fr); gap: 10px 22px;
+  align-items: start; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px 16px;
+}
+.recipe > * { min-width: 0; }
+.want { font-weight: 600; font-size: 15px; display: grid; gap: 3px; }
+.want small { font-weight: 400; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.out { display: grid; gap: 8px; min-width: 0; }
+
+/* Code */
+code, pre { font-family: var(--font-mono); }
+code { font-size: .88em; background: var(--sunken); padding: 1px 6px; border-radius: 5px; }
+pre {
+  margin: 0; background: var(--sunken); border-radius: 9px; padding: 10px 13px;
+  font-size: 13px; line-height: 1.6; overflow-x: auto; position: relative; cursor: copy;
+  border: 1px solid transparent; transition: border-color .15s;
+}
+pre:hover { border-color: var(--line); }
+pre:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+pre.copied::after {
+  content: "Copied"; position: absolute; top: 7px; right: 9px; font-family: var(--font-body);
+  font-size: 11.5px; font-weight: 600; color: var(--ok); background: var(--ok-soft);
+  padding: 1px 8px; border-radius: 99px;
+}
+.kw { color: var(--blue); font-weight: 600; }
+.st { color: var(--str); }
+.nu { color: var(--accent); }
+.cm { color: var(--muted); font-style: italic; }
+
+/* Result tables */
+.result { display: grid; gap: 4px; }
+.result .cap { font-size: 11.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.result .scroll { overflow-x: auto; }
+.result table {
+  border-collapse: separate; border-spacing: 0; font-family: var(--font-mono); font-size: 12.5px;
+  border: 1px solid var(--line); border-radius: 8px; overflow: hidden; min-width: 160px;
+}
+.result th, .result td { padding: 4px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+.result th { background: var(--sunken); font-weight: 600; color: var(--muted); }
+.result tr:last-child td { border-bottom: 0; }
+.result td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.result .null { color: var(--muted); font-style: italic; }
+.result tr.hi td { background: var(--ok-soft); }
+.result tr.gone td { color: var(--muted); text-decoration: line-through; }
+
+/* Reference tables */
+.ref { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.ref table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.ref th, .ref td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ref th { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.ref tr:last-child td { border-bottom: 0; }
+.ref td:first-child { white-space: nowrap; }
+
+/* Notes */
+.note {
+  display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start;
+  border-radius: 12px; padding: 12px 14px; font-size: 14.5px;
+}
+.note .ic { font-weight: 700; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding-top: 2px; }
+.note.tip { background: var(--ok-soft); } .note.tip .ic { color: var(--ok); }
+.note.warn { background: var(--warn-soft); } .note.warn .ic { color: var(--warn); }
+.note.info { background: var(--blue-soft); } .note.info .ic { color: var(--blue); }
+.stack { display: grid; gap: 12px; margin-top: 12px; }
+
+/* Schema */
+.schema { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.tbox { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.tbox h3 { margin: 0; padding: 9px 14px; font-family: var(--font-mono); font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--line); }
+.tbox h3 small { font-family: var(--font-body); font-weight: 400; color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+.tbox ul { list-style: none; margin: 0; padding: 8px 14px; font-family: var(--font-mono); font-size: 13px; display: grid; gap: 3px; }
+.tbox li { display: flex; justify-content: space-between; gap: 10px; }
+.tbox li .t { color: var(--muted); font-size: 12px; }
+.tbox .ex { padding: 8px 14px 10px; font-size: 13px; color: var(--muted); background: var(--sunken); }
+.pk { color: var(--accent); font-weight: 600; }
+.fk { color: var(--blue); font-weight: 600; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 12px; }
+.legend div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+.legend b { display: block; }
+
+/* Clause order */
+.order { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.step {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  display: grid; gap: 2px;
+}
+.step .k { font-family: var(--font-mono); font-weight: 600; color: var(--blue); font-size: 13.5px; }
+.step .d { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.step .run { font-size: 12px; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.step.req { border-color: var(--blue); }
+
+/* Do / don't */
+.dd { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dd > div { display: grid; gap: 6px; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.dd .lab { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.dd .bad { color: var(--warn); } .dd .good { color: var(--ok); }
+.dd p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+/* Pipeline */
+.pipe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.pipe span { background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 5px 14px; font-size: 14px; }
+.pipe span code { background: none; padding: 0; }
+.pipe i { font-style: normal; color: var(--accent); font-weight: 700; }
+
+footer { padding-block: 0 40px; color: var(--muted); font-size: 13px; }
+footer .inner { display: flex; flex-wrap: wrap; gap: 6px 22px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 720px) {
+  .recipe { grid-template-columns: 1fr; }
+  .dd { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } pre { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="hero gutter">
+  <div class="inner">
+    <h1>sql<span>-z</span> cheatsheet</h1>
+    <p>Everything from the workshop on one page, in lesson order. Find what you want to do, copy the SQL, and compare your result with the one shown here.</p>
+    <div class="how">
+      <span><b>Click any code</b> to copy it</span>
+      <span><b>Part numbers</b> match <code>sql/03_examples.sql</code></span>
+      <span>Results assume <b>fresh data</b> (see <a href="#tools">reset</a>)</span>
+    </div>
+  </div>
+</header>
+
+<nav class="jump gutter" aria-label="Jump to topic">
+  <div class="inner">
+    <ol>
+      <li><a href="#database">Database</a></li>
+      <li><a href="#read"><span class="n">1</span>Read</a></li>
+      <li><a href="#filter"><span class="n">2</span>Filter</a></li>
+      <li><a href="#sort"><span class="n">3</span>Sort</a></li>
+      <li><a href="#summarize"><span class="n">4</span>Summarize</a></li>
+      <li><a href="#join"><span class="n">5</span>Join</a></li>
+      <li><a href="#subquery"><span class="n">6</span>Subquery</a></li>
+      <li><a href="#change"><span class="n">7</span>Change</a></li>
+      <li><a href="#transactions"><span class="n">8</span>Transactions</a></li>
+      <li><a href="#code">From code</a></li>
+      <li><a href="#tools">psql &amp; Docker</a></li>
+      <li><a href="#errors">Errors</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main class="gutter">
+<div class="inner">
+
+  <!-- DATABASE -->
+  <section class="topic" id="database">
+    <div class="topic-head">
+      <span class="part">Start here</span>
+      <h2>Meet the database</h2>
+      <p>Four tables. Each row has an <code>id</code>, and tables point at each other using those ids.</p>
+    </div>
+    <div class="schema">
+      <div class="tbox">
+        <h3>planets <small>where they live</small></h3>
+        <ul>
+          <li><span class="pk">id</span><span class="t">number, auto</span></li>
+          <li><span>name</span><span class="t">text, unique</span></li>
+          <li><span>gravity</span><span class="t">decimal</span></li>
+        </ul>
+        <div class="ex">1 Earth · 2 Namek · 3 Vegeta · 4 Other World</div>
+      </div>
+      <div class="tbox">
+        <h3>races <small>what they are</small></h3>
+        <ul>
+          <li><span class="pk">id</span><span class="t">number, auto</span></li>
+          <li><span>name</span><span class="t">text, unique</span></li>
+        </ul>
+        <div class="ex">1 Saiyan · 2 Human · 3 Namekian · 4 Android</div>
+      </div>
+      <div class="tbox">
+        <h3>characters <small>the fighters</small></h3>
+        <ul>
+          <li><span class="pk">id</span><span class="t">number, auto</span></li>
+          <li><span>name</span><span class="t">text</span></li>
+          <li><span>power_level</span><span class="t">number</span></li>
+          <li><span class="fk">planet_id</span><span class="t">→ planets.id</span></li>
+          <li><span class="fk">race_id</span><span class="t">→ races.id</span></li>
+        </ul>
+        <div class="ex">Goku, Vegeta, Gohan, Krillin, Piccolo, Tien, Android 18, Frieza</div>
+      </div>
+      <div class="tbox">
+        <h3>techniques <small>their moves</small></h3>
+        <ul>
+          <li><span class="pk">id</span><span class="t">number, auto</span></li>
+          <li><span>name</span><span class="t">text</span></li>
+          <li><span class="fk">character_id</span><span class="t">→ characters.id</span></li>
+        </ul>
+        <div class="ex">Kamehameha → Goku · Final Flash → Vegeta · …</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div><b class="pk">Primary key</b>A column that uniquely identifies each row. Here it's always <code>id</code>.</div>
+      <div><b class="fk">Foreign key</b>A column that points at another table's id. Goku's <code>planet_id = 1</code> means Earth.</div>
+      <div><b>NULL</b>"No value" or "unknown". Not 0 and not empty text. Frieza's race is NULL.</div>
+    </div>
+  </section>
+
+  <!-- READ -->
+  <section class="topic" id="read">
+    <div class="topic-head">
+      <span class="part">Part 1</span>
+      <h2>Read data</h2>
+      <p><code>SELECT</code> picks the columns, <code>FROM</code> picks the table. End every query with <code>;</code>.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">See everything in a table<small><code>*</code> means all columns.</small></div>
+        <div class="out"><pre class="sql">SELECT * FROM characters;</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">See only some columns<small>Prefer this over <code>*</code> in real code.</small></div>
+        <div class="out"><pre class="sql">SELECT name, power_level FROM characters;</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Rename a column in the output<small><code>AS</code> changes the label only, not the table.</small></div>
+        <div class="out"><pre class="sql">SELECT name AS fighter, power_level AS power
+FROM characters;</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Remove duplicates<small>Which planets do characters come from?</small></div>
+        <div class="out"><pre class="sql">SELECT DISTINCT planet_id FROM characters;</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER -->
+  <section class="topic" id="filter">
+    <div class="topic-head">
+      <span class="part">Part 2</span>
+      <h2>Keep only some rows</h2>
+      <p><code>WHERE</code> keeps the rows where the condition is true. Text always goes in <strong>single quotes</strong>.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">Compare numbers<small><code>=</code> <code>&lt;&gt;</code> (not equal) <code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code></small></div>
+        <div class="out">
+<pre class="sql">SELECT name, power_level
+FROM characters
+WHERE power_level &gt; 3000;</pre>
+          <div class="result"><span class="cap">Result · 5 rows</span><div class="scroll"><table>
+            <tr><th>name</th><th>power_level</th></tr>
+            <tr><td>Goku</td><td class="num">9001</td></tr>
+            <tr><td>Vegeta</td><td class="num">8500</td></tr>
+            <tr><td>Gohan</td><td class="num">4200</td></tr>
+            <tr><td>Piccolo</td><td class="num">3500</td></tr>
+            <tr><td>Frieza</td><td class="num">5300</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+      <div class="recipe">
+        <div class="want">Match text exactly</div>
+        <div class="out"><pre class="sql">WHERE name = 'Goku'</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Combine conditions<small>Both must be true (<code>AND</code>) or either one (<code>OR</code>).</small></div>
+        <div class="out"><pre class="sql">WHERE power_level &gt; 1000 AND planet_id = 1</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Match any value in a list<small>Shorter than writing many ORs.</small></div>
+        <div class="out"><pre class="sql">WHERE race_id IN (2, 4)</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Match a range<small>Both ends included.</small></div>
+        <div class="out"><pre class="sql">WHERE power_level BETWEEN 1000 AND 5000</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Match a text pattern<small><code>%</code> = any number of characters, <code>_</code> = exactly one. <code>ILIKE</code> ignores upper/lower case.</small></div>
+        <div class="out">
+<pre class="sql">WHERE name LIKE 'G%'      -- starts with G
+WHERE name ILIKE '%an%'   -- contains "an", any case</pre>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="dd">
+        <div>
+          <span class="lab bad">✗ Returns nothing</span>
+<pre class="sql">WHERE race_id = NULL</pre>
+          <p>NULL means unknown, so even <code>NULL = NULL</code> isn't true.</p>
+        </div>
+        <div>
+          <span class="lab good">✓ Finds Frieza</span>
+<pre class="sql">WHERE race_id IS NULL</pre>
+          <p>Always use <code>IS NULL</code> or <code>IS NOT NULL</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SORT -->
+  <section class="topic" id="sort">
+    <div class="topic-head">
+      <span class="part">Part 3</span>
+      <h2>Sort and take the top few</h2>
+      <p><code>ORDER BY</code> sorts: <code>ASC</code> is smallest first (the default), <code>DESC</code> is biggest first. <code>LIMIT</code> keeps the first N rows.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">The 3 strongest characters<small>Sort first, then cut.</small></div>
+        <div class="out">
+<pre class="sql">SELECT name, power_level
+FROM characters
+ORDER BY power_level DESC
+LIMIT 3;</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>name</th><th>power_level</th></tr>
+            <tr><td>Goku</td><td class="num">9001</td></tr>
+            <tr><td>Vegeta</td><td class="num">8500</td></tr>
+            <tr><td>Frieza</td><td class="num">5300</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <p style="margin:0;font-weight:600">The full shape of a SELECT</p>
+      <p style="margin:0;color:var(--muted)">Write the clauses in this order. Only SELECT and FROM are required. The orange number is the order the database actually <strong style="color:var(--ink)">runs</strong> them.</p>
+      <div class="order">
+        <div class="step req"><span class="k">SELECT</span><span class="d">columns to show</span><span class="run">runs 5th</span></div>
+        <div class="step req"><span class="k">FROM</span><span class="d">table, plus JOINs</span><span class="run">runs 1st</span></div>
+        <div class="step"><span class="k">WHERE</span><span class="d">keep matching rows</span><span class="run">runs 2nd</span></div>
+        <div class="step"><span class="k">GROUP BY</span><span class="d">bundle rows into groups</span><span class="run">runs 3rd</span></div>
+        <div class="step"><span class="k">HAVING</span><span class="d">keep matching groups</span><span class="run">runs 4th</span></div>
+        <div class="step"><span class="k">ORDER BY</span><span class="d">sort the result</span><span class="run">runs 6th</span></div>
+        <div class="step"><span class="k">LIMIT</span><span class="d">keep the first N</span><span class="run">runs 7th</span></div>
+      </div>
+      <div class="note info"><span class="ic">Why</span><span>WHERE runs before SELECT, so it can't use a name you made with <code>AS</code>. ORDER BY runs after SELECT, so it can.</span></div>
+<pre class="sql">SELECT name, power_level AS power
+FROM characters
+WHERE planet_id = 1
+ORDER BY power DESC
+LIMIT 3;</pre>
+    </div>
+  </section>
+
+  <!-- SUMMARIZE -->
+  <section class="topic" id="summarize">
+    <div class="topic-head">
+      <span class="part">Part 4</span>
+      <h2>Count, add up, and average</h2>
+      <p>Aggregate functions squash many rows into one number. <code>GROUP BY</code> gives you one number per group instead.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">Stats for the whole table<small><code>COUNT(*)</code> rows · <code>SUM</code> total · <code>AVG</code> average · <code>MIN</code> / <code>MAX</code>. NULLs are skipped.</small></div>
+        <div class="out">
+<pre class="sql">SELECT COUNT(*) AS total,
+       MAX(power_level) AS strongest,
+       MIN(power_level) AS weakest,
+       ROUND(AVG(power_level)) AS average
+FROM characters;</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>total</th><th>strongest</th><th>weakest</th><th>average</th></tr>
+            <tr><td class="num">8</td><td class="num">9001</td><td class="num">750</td><td class="num">4356</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+      <div class="recipe">
+        <div class="want">One count per group<small>How many characters live on each planet?</small></div>
+        <div class="out">
+<pre class="sql">SELECT planet_id, COUNT(*) AS fighters
+FROM characters
+GROUP BY planet_id;</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>planet_id</th><th>fighters</th></tr>
+            <tr><td class="num">1</td><td class="num">5</td></tr>
+            <tr><td class="num">2</td><td class="num">2</td></tr>
+            <tr><td class="num">3</td><td class="num">1</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+      <div class="recipe">
+        <div class="want">Filter rows and groups<small><code>WHERE</code> filters rows <em>before</em> grouping. <code>HAVING</code> filters groups <em>after</em>.</small></div>
+        <div class="out">
+<pre class="sql">SELECT planet_id, COUNT(*) AS strong
+FROM characters
+WHERE power_level &gt; 1000    -- rows
+GROUP BY planet_id
+HAVING COUNT(*) &gt;= 2;       -- groups</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>planet_id</th><th>strong</th></tr>
+            <tr><td class="num">1</td><td class="num">3</td></tr>
+            <tr><td class="num">2</td><td class="num">2</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="note tip"><span class="ic">Rule</span><span>Every column in SELECT must be in GROUP BY or inside an aggregate like <code>COUNT()</code>.</span></div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section class="topic" id="join">
+    <div class="topic-head">
+      <span class="part">Part 5</span>
+      <h2>Combine tables</h2>
+      <p>A character only stores <code>race_id = 1</code>. A JOIN looks up the matching row in <code>races</code> so you can show "Saiyan" instead. <code>ON</code> says how rows match. <code>c</code> and <code>r</code> are short names for the tables.</p>
+    </div>
+    <div class="dd">
+      <div>
+        <span class="lab">JOIN · only rows with a match</span>
+<pre class="sql">SELECT c.name, r.name AS race
+FROM characters c
+JOIN races r ON c.race_id = r.id;</pre>
+        <div class="result"><span class="cap">Result · 7 rows (Frieza is gone)</span><div class="scroll"><table>
+          <tr><th>name</th><th>race</th></tr>
+          <tr><td>Goku</td><td>Saiyan</td></tr>
+          <tr><td>Krillin</td><td>Human</td></tr>
+          <tr><td>Piccolo</td><td>Namekian</td></tr>
+          <tr><td colspan="2" class="null">… 4 more</td></tr>
+          <tr class="gone"><td>Frieza</td><td>—</td></tr>
+        </table></div></div>
+      </div>
+      <div>
+        <span class="lab">LEFT JOIN · every row from the left table</span>
+<pre class="sql">SELECT c.name, r.name AS race
+FROM characters c
+LEFT JOIN races r ON c.race_id = r.id;</pre>
+        <div class="result"><span class="cap">Result · 8 rows (Frieza kept)</span><div class="scroll"><table>
+          <tr><th>name</th><th>race</th></tr>
+          <tr><td>Goku</td><td>Saiyan</td></tr>
+          <tr><td>Krillin</td><td>Human</td></tr>
+          <tr><td>Piccolo</td><td>Namekian</td></tr>
+          <tr><td colspan="2" class="null">… 4 more</td></tr>
+          <tr class="hi"><td>Frieza</td><td class="null">NULL</td></tr>
+        </table></div></div>
+      </div>
+    </div>
+    <div class="recipes" style="margin-top:12px">
+      <div class="recipe">
+        <div class="want">Find rows with no match<small>LEFT JOIN, then keep the rows where the right side is NULL.</small></div>
+        <div class="out">
+<pre class="sql">SELECT p.name AS empty_planet
+FROM planets p
+LEFT JOIN characters c ON c.planet_id = p.id
+WHERE c.id IS NULL;</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>empty_planet</th></tr>
+            <tr><td>Other World</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+      <div class="recipe">
+        <div class="want">Join three tables<small>Technique → character → planet. Just chain the JOINs.</small></div>
+        <div class="out">
+<pre class="sql">SELECT c.name, t.name AS technique, p.name AS planet
+FROM techniques t
+JOIN characters c ON t.character_id = c.id
+JOIN planets p    ON c.planet_id = p.id;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBQUERY -->
+  <section class="topic" id="subquery">
+    <div class="topic-head">
+      <span class="part">Part 6</span>
+      <h2>A query inside a query</h2>
+      <p>The inner query in parentheses runs first, and its answer is used by the outer one.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">Who's stronger than average?<small>The inner query returns 4356.375.</small></div>
+        <div class="out">
+<pre class="sql">SELECT name, power_level
+FROM characters
+WHERE power_level &gt;
+  (SELECT AVG(power_level) FROM characters);</pre>
+          <div class="result"><span class="cap">Result</span><div class="scroll"><table>
+            <tr><th>name</th><th>power_level</th></tr>
+            <tr><td>Goku</td><td class="num">9001</td></tr>
+            <tr><td>Vegeta</td><td class="num">8500</td></tr>
+            <tr><td>Frieza</td><td class="num">5300</td></tr>
+          </table></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHANGE -->
+  <section class="topic" id="change">
+    <div class="topic-head">
+      <span class="part">Part 7</span>
+      <h2>Add, change, and remove rows</h2>
+      <p>These change the table for real. You can always <a href="#tools">reset</a> to fresh data.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">Add a row<small>List the columns, then the values in the same order. Skip <code>id</code>, it's generated. <code>RETURNING</code> shows what was created.</small></div>
+        <div class="out"><pre class="sql">INSERT INTO characters (name, power_level, planet_id, race_id)
+VALUES ('Yamcha', 400, 1, 2)
+RETURNING id;</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Change rows<small><code>SET</code> says what to change, <code>WHERE</code> says which rows.</small></div>
+        <div class="out"><pre class="sql">UPDATE characters
+SET power_level = 1200
+WHERE name = 'Yamcha';</pre></div>
+      </div>
+      <div class="recipe">
+        <div class="want">Remove rows</div>
+        <div class="out"><pre class="sql">DELETE FROM characters
+WHERE name = 'Yamcha';</pre></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="note warn"><span class="ic">Careful</span><span><strong>UPDATE or DELETE without WHERE hits every row.</strong> <code>DELETE FROM characters;</code> empties the table. Run your WHERE as a SELECT first to see which rows you'd change.</span></div>
+      <div class="note info"><span class="ic">Foreign keys</span><span>The database protects you. You can't delete Goku while techniques still point at him, and you can't add a character on planet 99, because it doesn't exist.</span></div>
+    </div>
+  </section>
+
+  <!-- TRANSACTIONS -->
+  <section class="topic" id="transactions">
+    <div class="topic-head">
+      <span class="part">Part 8</span>
+      <h2>All or nothing</h2>
+      <p>A transaction groups changes together. Nothing is saved until <code>COMMIT</code>, and <code>ROLLBACK</code> undoes everything since <code>BEGIN</code>.</p>
+    </div>
+    <div class="recipes">
+      <div class="recipe">
+        <div class="want">Delete Goku safely<small>His techniques must go first. If either step fails, neither should happen.</small></div>
+        <div class="out"><pre class="sql">BEGIN;
+DELETE FROM techniques WHERE character_id = 1;
+DELETE FROM characters WHERE id = 1;
+ROLLBACK;   -- or COMMIT; to keep it</pre></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="note tip"><span class="ic">Tip</span><span>About to run something risky by hand? Wrap it in <code>BEGIN;</code> … <code>ROLLBACK;</code>, check the result, then run it again with <code>COMMIT;</code>.</span></div>
+    </div>
+  </section>
+
+  <!-- CODE -->
+  <section class="topic" id="code">
+    <div class="topic-head">
+      <span class="part">Steps 2 &amp; 3</span>
+      <h2>SQL from code</h2>
+      <p>The same SQL, sent by a Go program instead of typed by you. The values travel separately from the query text.</p>
+    </div>
+    <div class="pipe"><span>HTTP request</span><i>→</i><span>Go variable</span><i>→</i><span><code>$1</code> in the query</span><i>→</i><span>row in the table</span></div>
+    <div class="dd">
+      <div>
+        <span class="lab bad">✗ Never glue values in</span>
+<pre class="go">"WHERE name = '" + name + "'"</pre>
+        <p>A user could type SQL into <code>name</code> and run it. This is <strong>SQL injection</strong>.</p>
+      </div>
+      <div>
+        <span class="lab good">✓ Use placeholders</span>
+<pre class="go">db.Query("... WHERE name = $1", name)</pre>
+        <p>The database fills in <code>$1</code> safely.</p>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="ref"><table>
+        <thead><tr><th>Go call</th><th>Use it for</th></tr></thead>
+        <tbody>
+          <tr><td><code>db.Query</code></td><td>Many rows. Loop with <code>rows.Next()</code> and copy columns out with <code>rows.Scan(...)</code></td></tr>
+          <tr><td><code>db.QueryRow</code></td><td>Exactly one row, like a lookup by id or <code>INSERT … RETURNING id</code></td></tr>
+          <tr><td><code>db.Exec</code></td><td>No rows back: UPDATE, DELETE</td></tr>
+          <tr><td><code>db.Begin</code></td><td>Start a transaction, finish with <code>tx.Commit()</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="ref"><table>
+        <thead><tr><th>API request</th><th>Input comes from</th><th>SQL it runs</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /characters?min_power=3000</code></td><td>query string</td><td><code>SELECT … WHERE power_level &gt;= $1</code></td></tr>
+          <tr><td><code>GET /characters/1</code></td><td>URL path</td><td><code>SELECT … WHERE id = $1</code></td></tr>
+          <tr><td><code>POST /characters</code></td><td>JSON body</td><td><code>INSERT … VALUES ($1, $2, $3, $4)</code></td></tr>
+          <tr><td><code>PUT /characters/4</code></td><td>URL path + JSON body</td><td><code>UPDATE … SET … WHERE id = $5</code></td></tr>
+          <tr><td><code>DELETE /characters/4</code></td><td>URL path</td><td><code>DELETE … WHERE id = $1</code>, in a transaction</td></tr>
+        </tbody>
+      </table></div>
+<pre class="sh">curl -X POST localhost:8080/characters \
+  -d '{"name":"Bulma","power_level":12,"planet_id":1,"race_id":2}'</pre>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="topic" id="tools">
+    <div class="topic-head">
+      <span class="part">Tools</span>
+      <h2>psql and Docker</h2>
+      <p>Commands starting with <code>\</code> are psql shortcuts, not SQL, so they don't need a <code>;</code>.</p>
+    </div>
+    <div class="ref"><table>
+      <thead><tr><th>Type this</th><th>To</th></tr></thead>
+      <tbody>
+        <tr><td><code>./connect.sh</code></td><td>Start the database and open psql</td></tr>
+        <tr><td><code>\dt</code></td><td>List tables</td></tr>
+        <tr><td><code>\d characters</code></td><td>Show a table's columns</td></tr>
+        <tr><td><code>\x</code></td><td>Switch to vertical output, for wide rows</td></tr>
+        <tr><td><code>q</code></td><td>Get out of a long result that's paging</td></tr>
+        <tr><td><code>\q</code></td><td>Quit psql</td></tr>
+        <tr><td><code>docker compose down</code></td><td>Stop the database (data is kept)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="stack">
+      <div class="recipe">
+        <div class="want">Reset to fresh data<small>Wipes all changes and reloads the starting rows.</small></div>
+        <div class="out"><pre class="sh">docker compose down -v &amp;&amp; docker compose up -d --wait</pre></div>
+      </div>
+      <div class="note info"><span class="ic">Stuck?</span><span>If the prompt changes from <code>dragonball=#</code> to <code>dragonball-#</code>, psql is waiting for the rest of your query. You probably forgot the <code>;</code>. Type <code>;</code> and press Enter.</span></div>
+      <div class="ref"><table>
+        <thead><tr><th>Host</th><th>Port</th><th>Database</th><th>User</th><th>Password</th></tr></thead>
+        <tbody><tr><td><code>localhost</code></td><td><code>5432</code></td><td><code>dragonball</code></td><td><code>goku</code></td><td><code>kamehameha</code></td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ERRORS -->
+  <section class="topic" id="errors">
+    <div class="topic-head">
+      <span class="part">When it breaks</span>
+      <h2>Errors you'll probably see</h2>
+      <p>Errors are normal. Read the message: it usually says exactly what's wrong.</p>
+    </div>
+    <div class="ref"><table>
+      <thead><tr><th>The message says</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td><code>column "goku" does not exist</code></td><td>Put text in <strong>single</strong> quotes: <code>'Goku'</code></td></tr>
+        <tr><td><code>must appear in the GROUP BY clause</code></td><td>Add that column to GROUP BY, or wrap it in an aggregate</td></tr>
+        <tr><td><code>column reference "name" is ambiguous</code></td><td>Both tables have that column. Say which one: <code>c.name</code></td></tr>
+        <tr><td><code>violates foreign key constraint</code></td><td>The id you point at doesn't exist, or other rows still point at this one</td></tr>
+        <tr><td><code>aggregate functions are not allowed in WHERE</code></td><td>Move conditions on <code>COUNT()</code>, <code>AVG()</code>, … to HAVING</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+</div>
+</main>
+
+<footer class="gutter">
+  <div class="inner">
+    <span>github.com/rmpato/sql-z</span>
+    <span>Full examples with explanations: <code>sql/03_examples.sql</code></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var KW = ["SELECT","FROM","WHERE","AND","OR","NOT","IN","BETWEEN","LIKE","ILIKE","IS","NULL","AS","ORDER","BY","GROUP","HAVING","LIMIT","DESC","ASC","JOIN","LEFT","ON","INSERT","INTO","VALUES","RETURNING","UPDATE","SET","DELETE","BEGIN","COMMIT","ROLLBACK","COUNT","SUM","AVG","MIN","MAX","ROUND","DISTINCT"];
+  var kwRe = new RegExp("\\b(" + KW.join("|") + ")\\b", "g");
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function plain(t) {
+    return esc(t).replace(kwRe, '<span class="kw">$1</span>').replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="nu">$1</span>');
+  }
+  function hl(src) {
+    var out = "", re = /(--[^\n]*)|('(?:[^']|'')*')/g, last = 0, m;
+    while ((m = re.exec(src))) {
+      out += plain(src.slice(last, m.index));
+      out += m[1] ? '<span class="cm">' + esc(m[1]) + "</span>" : '<span class="st">' + esc(m[2]) + "</span>";
+      last = re.lastIndex;
+    }
+    return out + plain(src.slice(last));
+  }
+  document.querySelectorAll("pre.sql").forEach(function (p) { p.innerHTML = hl(p.textContent); });
+  document.querySelectorAll("pre.go").forEach(function (p) {
+    p.innerHTML = esc(p.textContent).replace(/("[^"]*")/g, '<span class="st">$1</span>').replace(/(\$\d)/g, '<span class="nu">$1</span>');
+  });
+
+  document.querySelectorAll("pre").forEach(function (p) {
+    p.tabIndex = 0;
+    p.setAttribute("role", "button");
+    p.setAttribute("aria-label", "Copy code");
+    function flash() { p.classList.add("copied"); setTimeout(function () { p.classList.remove("copied"); }, 1100); }
+    function selectIt() { var r = document.createRange(); r.selectNodeContents(p); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    function copy() {
+      try { navigator.clipboard.writeText(p.textContent).then(flash, selectIt); }
+      catch (e) { selectIt(); }
+    }
+    p.addEventListener("click", copy);
+    p.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copy(); } });
+  });
+})();
+</script>
+</body>
+</html>

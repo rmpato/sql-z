@@ -15,6 +15,16 @@ No prior database experience needed.
 
 Stuck? See [Troubleshooting](docs/troubleshooting.md).
 
+## Cheatsheet
+
+Keep [`docs/cheatsheet.html`](docs/cheatsheet.html) open while you work. It covers every lesson topic as copyable recipes, with the results you should get. Open it in your browser (GitHub only shows its source code):
+
+```bash
+xdg-open docs/cheatsheet.html   # Ubuntu / Linux
+open docs/cheatsheet.html       # macOS
+start docs/cheatsheet.html      # Windows (Git Bash)
+```
+
 ## Quick start
 
 Already have Docker and Go 1.22+? Then:
@@ -70,6 +80,6 @@ sql/
   03_examples.sql   the SQL lesson (step 1)
 go-demo/            step 2: a Go program running SQL
 go-api/             step 3: a REST API backed by SQL
-docs/               the guides linked above
+docs/               the guides linked above, plus cheatsheet.html
 connect.sh          start the database and open psql
 ```
