@@ -25,6 +25,22 @@ Each endpoint gets its input from a different part of the request:
 | `PUT /characters/{id}` | URL path + JSON body | `UPDATE … SET … WHERE id = $5` |
 | `DELETE /characters/{id}` | URL path | `DELETE … WHERE id = $1` (in a transaction) |
 
+## Follow one request
+
+Here's a `PUT` from start to finish. The id comes from the URL, the new values from the JSON body, and both end up in one `UPDATE`:
+
+```mermaid
+sequenceDiagram
+    participant C as curl
+    participant A as go-api
+    participant D as PostgreSQL
+    C->>A: PUT /characters/4<br/>{"name":"Krillin","power_level":1770,…}
+    Note over A: path → id = 4<br/>body → name, power_level, planet_id, race_id
+    A->>D: UPDATE characters SET … WHERE id = $5
+    D-->>A: 1 row updated (0 would mean 404)
+    A-->>C: 200 OK + the updated character
+```
+
 ## Set up three windows
 
 | Window | Use it to |

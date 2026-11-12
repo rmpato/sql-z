@@ -27,6 +27,25 @@ Vegeta           8500  Vegeta
 ...
 ```
 
+## Qué pasa cuando se ejecuta
+
+```mermaid
+sequenceDiagram
+    participant P as go-demo
+    participant D as PostgreSQL
+    P->>D: Ping (¿estás ahí?)
+    D-->>P: sí
+    P->>D: INSERT … VALUES ($1, $2, $3, $4)<br/>con "Trunks", 5000, 1, 1
+    D-->>P: RETURNING id → 9
+    P->>D: SELECT … JOIN planets …
+    D-->>P: filas
+    loop por cada fila
+        P->>P: rows.Scan(&name, &power, &planet)
+    end
+```
+
+Fijate que el texto de la consulta y los valores viajan **por separado**. La base de datos los junta de forma segura.
+
 ## Comparalo con el paso 1
 
 Abrí [`go-demo/main.go`](../../go-demo/main.go) al lado de [`sql/03_ejemplos.sql`](../../sql/03_ejemplos.sql). El programa ejecuta dos consultas que ya conocés:

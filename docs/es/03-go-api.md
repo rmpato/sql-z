@@ -25,6 +25,22 @@ Cada endpoint toma sus datos de una parte distinta del pedido:
 | `PUT /characters/{id}` | la ruta + el cuerpo JSON | `UPDATE … SET … WHERE id = $5` |
 | `DELETE /characters/{id}` | la ruta de la URL | `DELETE … WHERE id = $1` (en una transacción) |
 
+## Seguí un pedido
+
+Este es un `PUT` de principio a fin. El id viene de la URL, los valores nuevos del cuerpo JSON, y los dos terminan en un solo `UPDATE`:
+
+```mermaid
+sequenceDiagram
+    participant C as curl
+    participant A as go-api
+    participant D as PostgreSQL
+    C->>A: PUT /characters/4<br/>{"name":"Krillin","power_level":1770,…}
+    Note over A: ruta → id = 4<br/>cuerpo → name, power_level, planet_id, race_id
+    A->>D: UPDATE characters SET … WHERE id = $5
+    D-->>A: 1 fila actualizada (0 sería un 404)
+    A-->>C: 200 OK + el personaje actualizado
+```
+
 ## Armá tres ventanas
 
 | Ventana | Para |

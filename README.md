@@ -41,14 +41,48 @@ cd sql-z
 
 Otherwise start with [Setup](docs/00-setup.md).
 
+## How it fits together
+
+Everything talks to the same database. Each step adds one layer:
+
+```mermaid
+flowchart LR
+    you["You<br/>psql or Beekeeper"] -->|"step 1: SQL by hand"| db[("PostgreSQL<br/>in Docker")]
+    demo["go-demo<br/>Go program"] -->|"step 2: SQL from code"| db
+    curl["curl"] -->|HTTP| api["go-api<br/>REST API"]
+    api -->|"step 3: SQL behind an API"| db
+```
+
 ## The database
 
-Four tables, linked by ids:
+Four tables, linked by ids. A character can have no race (that's Frieza), so that link is optional:
 
-```
-planets ──┐
-          ├── characters ── techniques
-races   ──┘
+```mermaid
+erDiagram
+    planets ||--o{ characters : "home of"
+    races |o--o{ characters : "race of"
+    characters ||--o{ techniques : "knows"
+    planets {
+        int id PK
+        text name
+        numeric gravity
+    }
+    races {
+        int id PK
+        text name
+    }
+    characters {
+        int id PK
+        text name
+        int power_level
+        int planet_id FK
+        int race_id FK
+    }
+    techniques {
+        int id PK
+        text name
+        int character_id FK
+    }
 ```
 
 | Table | Holds | Links to |

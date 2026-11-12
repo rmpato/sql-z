@@ -27,6 +27,25 @@ Vegeta           8500  Vegeta
 ...
 ```
 
+## What happens when it runs
+
+```mermaid
+sequenceDiagram
+    participant P as go-demo
+    participant D as PostgreSQL
+    P->>D: Ping (are you there?)
+    D-->>P: yes
+    P->>D: INSERT … VALUES ($1, $2, $3, $4)<br/>with "Trunks", 5000, 1, 1
+    D-->>P: RETURNING id → 9
+    P->>D: SELECT … JOIN planets …
+    D-->>P: rows
+    loop for each row
+        P->>P: rows.Scan(&name, &power, &planet)
+    end
+```
+
+Notice the query text and the values travel **separately**. The database puts them together safely.
+
 ## Compare with step 1
 
 Open [`go-demo/main.go`](../go-demo/main.go) next to [`sql/03_examples.sql`](../sql/03_examples.sql). The program runs two queries you already know:

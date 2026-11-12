@@ -1,0 +1,205 @@
+<!doctype html>
+{%- assign p = page.path -%}
+{%- if p contains 'docs/es/' or p == 'README.es.md' -%}{%- assign es = true -%}{%- else -%}{%- assign es = false -%}{%- endif -%}
+{%- assign home = false -%}
+{%- if p == 'README.md' or p == 'README.es.md' -%}{%- assign home = true -%}{%- endif -%}
+
+{%- comment -%} Counterpart page in the other language {%- endcomment -%}
+{%- case p -%}
+  {%- when 'README.md' -%}{%- assign other = '/README.es.html' -%}
+  {%- when 'README.es.md' -%}{%- assign other = '/' -%}
+  {%- when 'docs/00-setup.md' -%}{%- assign other = '/docs/es/00-preparacion.html' -%}
+  {%- when 'docs/es/00-preparacion.md' -%}{%- assign other = '/docs/00-setup.html' -%}
+  {%- when 'docs/01-sql.md' -%}{%- assign other = '/docs/es/01-sql.html' -%}
+  {%- when 'docs/es/01-sql.md' -%}{%- assign other = '/docs/01-sql.html' -%}
+  {%- when 'docs/02-go-demo.md' -%}{%- assign other = '/docs/es/02-go-demo.html' -%}
+  {%- when 'docs/es/02-go-demo.md' -%}{%- assign other = '/docs/02-go-demo.html' -%}
+  {%- when 'docs/03-go-api.md' -%}{%- assign other = '/docs/es/03-go-api.html' -%}
+  {%- when 'docs/es/03-go-api.md' -%}{%- assign other = '/docs/03-go-api.html' -%}
+  {%- when 'docs/04-next-steps.md' -%}{%- assign other = '/docs/es/04-proximos-pasos.html' -%}
+  {%- when 'docs/es/04-proximos-pasos.md' -%}{%- assign other = '/docs/04-next-steps.html' -%}
+  {%- when 'docs/troubleshooting.md' -%}{%- assign other = '/docs/es/problemas.html' -%}
+  {%- when 'docs/es/problemas.md' -%}{%- assign other = '/docs/troubleshooting.html' -%}
+  {%- else -%}{%- if es -%}{%- assign other = '/' -%}{%- else -%}{%- assign other = '/README.es.html' -%}{%- endif -%}
+{%- endcase -%}
+
+{%- if es -%}
+  {%- assign home_url = '/README.es.html' -%}
+  {%- assign sheet_url = '/docs/es/cheatsheet.html' -%}
+  {%- capture steps -%}
+/docs/es/00-preparacion.html|0|Preparación
+/docs/es/01-sql.html|1|SQL a mano
+/docs/es/02-go-demo.html|2|SQL desde código
+/docs/es/03-go-api.html|3|SQL detrás de una API
+/docs/es/04-proximos-pasos.html|4|Próximos pasos
+/docs/es/problemas.html|?|Problemas comunes
+  {%- endcapture -%}
+{%- else -%}
+  {%- assign home_url = '/' -%}
+  {%- assign sheet_url = '/docs/cheatsheet.html' -%}
+  {%- capture steps -%}
+/docs/00-setup.html|0|Setup
+/docs/01-sql.html|1|SQL by hand
+/docs/02-go-demo.html|2|SQL from code
+/docs/03-go-api.html|3|SQL behind an API
+/docs/04-next-steps.html|4|Next steps
+/docs/troubleshooting.html|?|Troubleshooting
+  {%- endcapture -%}
+{%- endif -%}
+{%- assign step_lines = steps | strip | newline_to_br | split: '<br />' -%}
+
+<html lang="{% if es %}es{% else %}en{% endif %}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if home %}sql-z · {% if es %}Taller de SQL con Dragon Ball{% else %}Dragon Ball SQL workshop{% endif %}{% else %}{{ page.title | default: site.title }} · sql-z{% endif %}</title>
+<meta name="description" content="{% if es %}Aprendé lo esencial de SQL con datos de Dragon Ball, y después mirá cómo lo usa el código de verdad.{% else %}{{ site.description }}{% endif %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+</head>
+<body class="{% if home %}is-home{% else %}is-doc{% endif %}">
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="{{ home_url | relative_url }}">sql<span>-z</span></a>
+    <nav class="links">
+      <a href="{{ home_url | relative_url }}">{% if es %}Guías{% else %}Guides{% endif %}</a>
+      <a href="{{ sheet_url | relative_url }}">{% if es %}Machete{% else %}Cheatsheet{% endif %}</a>
+      <a href="https://github.com/rmpato/sql-z">GitHub</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      {%- if es -%}
+      <a href="{{ other | relative_url }}" lang="en">EN</a><span aria-current="true">ES</span>
+      {%- else -%}
+      <span aria-current="true">EN</span><a href="{{ other | relative_url }}" lang="es">ES</a>
+      {%- endif -%}
+    </div>
+  </div>
+</header>
+
+{% if home %}
+<section class="hero">
+  <div class="hero-in">
+    <div class="hero-copy">
+      <p class="eyebrow">{% if es %}Taller de SQL · PostgreSQL + Go{% else %}SQL workshop · PostgreSQL + Go{% endif %}</p>
+      <h1>{% if es %}Aprendé SQL con <em>Goku, Vegeta</em> y compañía.{% else %}Learn SQL with <em>Goku, Vegeta</em> and friends.{% endif %}</h1>
+      <p class="lede">{% if es %}Lo esencial de SQL a mano, después las mismas consultas desde código y detrás de una API. No hace falta saber nada de bases de datos.{% else %}Essential SQL by hand, then the same queries from code and behind an API. No database experience needed.{% endif %}</p>
+      <div class="cta">
+        <a class="btn primary" href="{% if es %}{{ '/docs/es/00-preparacion.html' | relative_url }}{% else %}{{ '/docs/00-setup.html' | relative_url }}{% endif %}">{% if es %}Empezar el taller →{% else %}Start the workshop →{% endif %}</a>
+        <a class="btn" href="{{ sheet_url | relative_url }}">{% if es %}Abrir el machete{% else %}Open the cheatsheet{% endif %}</a>
+      </div>
+    </div>
+    <figure class="scouter" aria-label="{% if es %}Ejemplo de consulta y resultado{% else %}Example query and result{% endif %}">
+      <div class="term-top"><i></i><i></i><i></i><span>dragonball=#</span></div>
+<pre class="term"><span class="k">SELECT</span> name, power_level
+<span class="k">FROM</span> characters
+<span class="k">ORDER BY</span> power_level <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="n">3</span>;</pre>
+      <table class="term-out">
+        <thead><tr><th>name</th><th>power_level</th></tr></thead>
+        <tbody>
+          <tr><td>Goku</td><td class="num"><b style="--w:100%"></b>9001</td></tr>
+          <tr><td>Vegeta</td><td class="num"><b style="--w:94%"></b>8500</td></tr>
+          <tr><td>Frieza</td><td class="num"><b style="--w:59%"></b>5300</td></tr>
+        </tbody>
+      </table>
+      <figcaption>(3 rows)</figcaption>
+    </figure>
+  </div>
+</section>
+{% endif %}
+
+<div class="page">
+  {% unless home %}
+  <aside class="side">
+    <p class="side-h">{% if es %}El recorrido{% else %}The path{% endif %}</p>
+    <ol>
+      {%- for line in step_lines -%}
+        {%- assign parts = line | strip | split: '|' -%}
+        {%- assign url = parts[0] -%}
+        {%- assign this_url = page.url | replace: '.md', '.html' -%}
+        <li><a href="{{ url | relative_url }}"{% if this_url == url %} aria-current="page"{% endif %}><span class="num">{{ parts[1] }}</span>{{ parts[2] }}</a></li>
+      {%- endfor -%}
+    </ol>
+    <a class="side-sheet" href="{{ sheet_url | relative_url }}">{% if es %}Machete de SQL ↗{% else %}SQL cheatsheet ↗{% endif %}</a>
+  </aside>
+  {% endunless %}
+  <main class="content">
+    {{ content }}
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span><b>sql-z</b> · {% if es %}un taller de SQL con datos de Dragon Ball{% else %}a Dragon Ball SQL workshop{% endif %}</span>
+    <a href="https://github.com/rmpato/sql-z">github.com/rmpato/sql-z</a>
+  </div>
+</footer>
+
+<script>
+// Turn ```mermaid code blocks into diagrams (GitHub renders them natively; the site needs mermaid.js).
+(function () {
+  var blocks = document.querySelectorAll(".content .language-mermaid");
+  if (!blocks.length) return;
+  blocks.forEach(function (el) {
+    // kramdown emits <pre><code class="language-mermaid"> (or a wrapping div); replace the whole block
+    var target = el.closest("div.highlighter-rouge") || (el.parentElement && el.parentElement.tagName === "PRE" ? el.parentElement : el);
+    var pre = document.createElement("pre");
+    pre.className = "mermaid";
+    pre.textContent = el.textContent;
+    target.replaceWith(pre);
+  });
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js";
+  s.onload = function () {
+    var css = getComputedStyle(document.documentElement);
+    var v = function (n) { return css.getPropertyValue(n).trim(); };
+    var dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      fontFamily: "Inter, system-ui, sans-serif",
+      themeVariables: {
+        darkMode: dark,
+        background: v("--surface"),
+        primaryColor: v("--blue-soft"),
+        primaryBorderColor: v("--blue"),
+        primaryTextColor: v("--ink"),
+        secondaryColor: v("--accent-soft"),
+        secondaryBorderColor: v("--accent"),
+        secondaryTextColor: v("--ink"),
+        tertiaryColor: v("--sunken"),
+        tertiaryBorderColor: v("--line"),
+        tertiaryTextColor: v("--ink"),
+        lineColor: v("--muted"),
+        textColor: v("--ink"),
+        mainBkg: v("--blue-soft"),
+        nodeBorder: v("--blue"),
+        clusterBkg: v("--sunken"),
+        clusterBorder: v("--line"),
+        edgeLabelBackground: v("--surface"),
+        actorBkg: v("--blue-soft"),
+        actorBorder: v("--blue"),
+        actorTextColor: v("--ink"),
+        actorLineColor: v("--muted"),
+        signalColor: v("--ink"),
+        signalTextColor: v("--ink"),
+        labelBoxBkgColor: v("--accent-soft"),
+        labelBoxBorderColor: v("--accent"),
+        labelTextColor: v("--ink"),
+        noteBkgColor: v("--accent-soft"),
+        noteBorderColor: v("--accent"),
+        noteTextColor: v("--ink"),
+        attributeBackgroundColorOdd: v("--surface"),
+        attributeBackgroundColorEven: v("--sunken")
+      }
+    });
+    mermaid.run({ querySelector: ".content pre.mermaid" });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

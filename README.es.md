@@ -41,14 +41,48 @@ cd sql-z
 
 Si no, empezá por la [Preparación](docs/es/00-preparacion.md).
 
+## Cómo encaja todo
+
+Todo habla con la misma base de datos. Cada paso suma una capa:
+
+```mermaid
+flowchart LR
+    you["Vos<br/>psql o Beekeeper"] -->|"paso 1: SQL a mano"| db[("PostgreSQL<br/>en Docker")]
+    demo["go-demo<br/>programa en Go"] -->|"paso 2: SQL desde código"| db
+    curl["curl"] -->|HTTP| api["go-api<br/>API REST"]
+    api -->|"paso 3: SQL detrás de una API"| db
+```
+
 ## La base de datos
 
-Cuatro tablas, conectadas por ids:
+Cuatro tablas, conectadas por ids. Un personaje puede no tener raza (es el caso de Frieza, nuestro Freezer), así que ese vínculo es opcional:
 
-```
-planets ──┐
-          ├── characters ── techniques
-races   ──┘
+```mermaid
+erDiagram
+    planets ||--o{ characters : "es el hogar de"
+    races |o--o{ characters : "es la raza de"
+    characters ||--o{ techniques : "conoce"
+    planets {
+        int id PK
+        text name
+        numeric gravity
+    }
+    races {
+        int id PK
+        text name
+    }
+    characters {
+        int id PK
+        text name
+        int power_level
+        int planet_id FK
+        int race_id FK
+    }
+    techniques {
+        int id PK
+        text name
+        int character_id FK
+    }
 ```
 
 | Tabla | Qué guarda | Apunta a |

@@ -1,0 +1,25 @@
+# GitHub Pages site config (https://rmpato.github.io/sql-z/)
+title: sql-z
+description: Learn essential SQL with Dragon Ball data, then see how real code uses it.
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-titles-from-headings
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+relative_links:
+  enabled: true
+  collections: false
+exclude:
+  - connect.sh
+  - docker-compose.yml
+  - go-api/go.sum
+  - go-demo/go.sum

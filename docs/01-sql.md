@@ -53,6 +53,15 @@ The file ends with **practice exercises**, with answers at the bottom. Try them 
 
 > **Keep the cheatsheet open.** [`docs/cheatsheet.html`](cheatsheet.html) has every topic above on one page, with copyable examples. Open it in your browser: `xdg-open docs/cheatsheet.html` (Linux), `open docs/cheatsheet.html` (macOS) or `start docs/cheatsheet.html` (Windows). It's also online: [rmpato.github.io/sql-z/docs/cheatsheet.html](https://rmpato.github.io/sql-z/docs/cheatsheet.html).
 
+## How a SELECT runs
+
+You **write** `SELECT` first, but the database **runs** it fifth. Knowing this order explains many errors, like why `WHERE` can't use an alias made with `AS`:
+
+```mermaid
+flowchart LR
+    F["1 · FROM<br/>pick tables"] --> W["2 · WHERE<br/>filter rows"] --> G["3 · GROUP BY<br/>make groups"] --> H["4 · HAVING<br/>filter groups"] --> S["5 · SELECT<br/>pick columns"] --> O["6 · ORDER BY<br/>sort"] --> L["7 · LIMIT<br/>cut"]
+```
+
 ## Good to know
 
 - **Some queries fail on purpose** to show common mistakes. The comment above them says so.
