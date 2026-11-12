@@ -56,14 +56,16 @@
 <meta name="description" content="{% if es %}Aprendé lo esencial de SQL con datos de Dragon Ball, y después mirá cómo lo usa el código de verdad.{% else %}{{ site.description }}{% endif %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap">
 <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+<meta name="theme-color" content="#f6f5f0">
+<link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
 </head>
 <body class="{% if home %}is-home{% else %}is-doc{% endif %}">
 
 <header class="bar">
-  <div class="bar-in">
-    <a class="brand" href="{{ home_url | relative_url }}">sql<span>-z</span></a>
+  <div class="bar-in wrap-x">
+    <a class="brand" href="{{ home_url | relative_url }}">sql-z<span class="dot-mark">.</span><span class="sub">{% if es %}taller de SQL{% else %}SQL workshop{% endif %}</span></a>
     <nav class="links">
       <a href="{{ home_url | relative_url }}">{% if es %}Guías{% else %}Guides{% endif %}</a>
       <a href="{{ sheet_url | relative_url }}">{% if es %}Machete{% else %}Cheatsheet{% endif %}</a>
@@ -81,18 +83,20 @@
 
 {% if home %}
 <section class="hero">
-  <div class="hero-in">
+  <div class="hero-in wrap-x">
     <div class="hero-copy">
-      <p class="eyebrow">{% if es %}Taller de SQL · PostgreSQL + Go{% else %}SQL workshop · PostgreSQL + Go{% endif %}</p>
-      <h1>{% if es %}Aprendé SQL con <em>Goku, Vegeta</em> y compañía.{% else %}Learn SQL with <em>Goku, Vegeta</em> and friends.{% endif %}</h1>
+      <p class="mono-label eyebrow"><span class="dot"></span>{% if es %}Taller de SQL · PostgreSQL + Go{% else %}SQL workshop · PostgreSQL + Go{% endif %}</p>
+      <h1>{% if es %}Aprendé SQL con <span class="name">Goku</span> y compañía.{% else %}Learn SQL with <span class="name">Goku</span> and friends.{% endif %}</h1>
       <p class="lede">{% if es %}Lo esencial de SQL a mano, después las mismas consultas desde código y detrás de una API. No hace falta saber nada de bases de datos.{% else %}Essential SQL by hand, then the same queries from code and behind an API. No database experience needed.{% endif %}</p>
       <div class="cta">
-        <a class="btn primary" href="{% if es %}{{ '/docs/es/00-preparacion.html' | relative_url }}{% else %}{{ '/docs/00-setup.html' | relative_url }}{% endif %}">{% if es %}Empezar el taller →{% else %}Start the workshop →{% endif %}</a>
-        <a class="btn" href="{{ sheet_url | relative_url }}">{% if es %}Abrir el machete{% else %}Open the cheatsheet{% endif %}</a>
+        <a class="pill pill--solid" href="{% if es %}{{ '/docs/es/00-preparacion.html' | relative_url }}{% else %}{{ '/docs/00-setup.html' | relative_url }}{% endif %}">{% if es %}Empezar el taller →{% else %}Start the workshop →{% endif %}</a>
+        <a class="pill" href="{{ sheet_url | relative_url }}">{% if es %}Abrir el machete{% else %}Open the cheatsheet{% endif %}</a>
       </div>
     </div>
+    <div class="hero-art">
+    <span class="halo" aria-hidden="true"></span>
     <figure class="scouter" aria-label="{% if es %}Ejemplo de consulta y resultado{% else %}Example query and result{% endif %}">
-      <div class="term-top"><i></i><i></i><i></i><span>dragonball=#</span></div>
+      <div class="term-top"><span>psql · dragonball</span><span class="pill-mini">sql</span></div>
 <pre class="term"><span class="k">SELECT</span> name, power_level
 <span class="k">FROM</span> characters
 <span class="k">ORDER BY</span> power_level <span class="k">DESC</span>
@@ -107,14 +111,15 @@
       </table>
       <figcaption>(3 rows)</figcaption>
     </figure>
+    </div>
   </div>
 </section>
 {% endif %}
 
-<div class="page">
+<div class="page wrap-x">
   {% unless home %}
   <aside class="side">
-    <p class="side-h">{% if es %}El recorrido{% else %}The path{% endif %}</p>
+    <p class="mono-label side-h">{% if es %}El recorrido{% else %}The path{% endif %}</p>
     <ol>
       {%- for line in step_lines -%}
         {%- assign parts = line | strip | split: '|' -%}
@@ -123,7 +128,7 @@
         <li><a href="{{ url | relative_url }}"{% if this_url == url %} aria-current="page"{% endif %}><span class="num">{{ parts[1] }}</span>{{ parts[2] }}</a></li>
       {%- endfor -%}
     </ol>
-    <a class="side-sheet" href="{{ sheet_url | relative_url }}">{% if es %}Machete de SQL ↗{% else %}SQL cheatsheet ↗{% endif %}</a>
+    <a class="pill side-sheet" href="{{ sheet_url | relative_url }}">{% if es %}Machete de SQL ↗{% else %}SQL cheatsheet ↗{% endif %}</a>
   </aside>
   {% endunless %}
   <main class="content">
@@ -131,9 +136,9 @@
   </main>
 </div>
 
-<footer class="foot">
+<footer class="foot wrap-x">
   <div class="foot-in">
-    <span><b>sql-z</b> · {% if es %}un taller de SQL con datos de Dragon Ball{% else %}a Dragon Ball SQL workshop{% endif %}</span>
+    <span>sql-z · {% if es %}un taller de SQL con datos de Dragon Ball{% else %}a Dragon Ball SQL workshop{% endif %} · <a href="https://github.com/rmpato">rmpato</a></span>
     <a href="https://github.com/rmpato/sql-z">github.com/rmpato/sql-z</a>
   </div>
 </footer>
@@ -156,44 +161,44 @@
   s.onload = function () {
     var css = getComputedStyle(document.documentElement);
     var v = function (n) { return css.getPropertyValue(n).trim(); };
-    var dark = matchMedia("(prefers-color-scheme: dark)").matches;
     mermaid.initialize({
       startOnLoad: false,
       theme: "base",
-      fontFamily: "Inter, system-ui, sans-serif",
+      fontFamily: "'Zen Kaku Gothic New', system-ui, sans-serif",
       themeVariables: {
-        darkMode: dark,
+        darkMode: false,
         background: v("--surface"),
-        primaryColor: v("--blue-soft"),
-        primaryBorderColor: v("--blue"),
+        primaryColor: v("--surface"),
+        primaryBorderColor: v("--ink"),
         primaryTextColor: v("--ink"),
-        secondaryColor: v("--accent-soft"),
-        secondaryBorderColor: v("--accent"),
+        secondaryColor: v("--sky"),
+        secondaryBorderColor: v("--ink"),
         secondaryTextColor: v("--ink"),
-        tertiaryColor: v("--sunken"),
-        tertiaryBorderColor: v("--line"),
+        tertiaryColor: v("--surface-2"),
+        tertiaryBorderColor: v("--ink"),
         tertiaryTextColor: v("--ink"),
-        lineColor: v("--muted"),
+        lineColor: v("--ink"),
         textColor: v("--ink"),
-        mainBkg: v("--blue-soft"),
-        nodeBorder: v("--blue"),
-        clusterBkg: v("--sunken"),
-        clusterBorder: v("--line"),
-        edgeLabelBackground: v("--surface"),
-        actorBkg: v("--blue-soft"),
-        actorBorder: v("--blue"),
+        mainBkg: v("--surface"),
+        nodeBorder: v("--ink"),
+        clusterBkg: v("--surface-2"),
+        clusterBorder: v("--ink"),
+        edgeLabelBackground: v("--paper"),
+        actorBkg: v("--sky"),
+        actorBorder: v("--ink"),
         actorTextColor: v("--ink"),
-        actorLineColor: v("--muted"),
+        actorLineColor: v("--ink-soft"),
         signalColor: v("--ink"),
         signalTextColor: v("--ink"),
-        labelBoxBkgColor: v("--accent-soft"),
-        labelBoxBorderColor: v("--accent"),
+        labelBoxBkgColor: v("--sky"),
+        labelBoxBorderColor: v("--ink"),
         labelTextColor: v("--ink"),
-        noteBkgColor: v("--accent-soft"),
-        noteBorderColor: v("--accent"),
+        loopTextColor: v("--ink"),
+        noteBkgColor: v("--paper"),
+        noteBorderColor: v("--ink"),
         noteTextColor: v("--ink"),
         attributeBackgroundColorOdd: v("--surface"),
-        attributeBackgroundColorEven: v("--sunken")
+        attributeBackgroundColorEven: v("--paper")
       }
     });
     mermaid.run({ querySelector: ".content pre.mermaid" });
